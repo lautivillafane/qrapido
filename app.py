@@ -11,8 +11,8 @@ from PIL import Image, ImageDraw, ImageFont
 import uuid
 # --------
 # from database import 
-from models import conectar_ddbb, crear_reserva, leer_reservas, leer_reserva
-from SiBoti import SiBoti
+from app.models import conectar_ddbb, crear_reserva, leer_reservas, leer_reserva
+from app.SiBoti import SiBoti
 
 app = Flask(__name__)
 bot = SiBoti()  # cargamos el modelo una vez
