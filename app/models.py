@@ -44,7 +44,7 @@
 
 import mysql.connector
 from datetime import datetime
-from database import crear_ddbb
+from .database import crear_ddbb
 import os
 def conectar_ddbb():
     crear_ddbb()
