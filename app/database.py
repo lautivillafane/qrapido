@@ -12,14 +12,15 @@ def crear_ddbb():
         # password="12345"  
     )
     cursor = conexion.cursor()
+    """
+    Crear base localmenmte
+        # Crear base de datos si no existe
+        cursor.execute("CREATE DATABASE IF NOT EXISTS RinconDelSabor")
+        print("Base de datos 'restaurante' verificada o creada correctamente.")
 
-    # Crear base de datos si no existe
-    cursor.execute("CREATE DATABASE IF NOT EXISTS RinconDelSabor")
-    print("Base de datos 'restaurante' verificada o creada correctamente.")
-
-    # Seleccionar la base
-    cursor.execute("USE RinconDelSabor;")
-
+        # Seleccionar la base
+        cursor.execute("USE RinconDelSabor;")
+    """
     # Crear tabla reservas
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS reservas (
