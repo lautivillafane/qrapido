@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template, send_file, abort, jsonify
-import mysql.connector
 from mysql.connector import pooling, Error
 import qrcode
 import io
