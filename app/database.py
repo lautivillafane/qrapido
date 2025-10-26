@@ -9,7 +9,7 @@ def crear_ddbb():
         database=os.getenv("DB_NAME")
     # host="localhost",
         # user="root",
-        # password="12345"  
+        # password="12345"
     )
     cursor = conexion.cursor()
     """

@@ -3,14 +3,18 @@ import mysql.connector
 from collections import Counter
 from difflib import get_close_matches
 import unicodedata, re, random
-
+import os
 class SiBoti:
     def __init__(self, db_config=None):
         cfg = db_config or {
-            "host": "localhost",
-            "user": "root",
-            "password": "12345",
-            "database": "RinconDelSabor"
+            "host":os.getenv("DB_HOST"),
+            "user":os.getenv("DB_USER"),
+            "password":os.getenv("DB_PASS"),
+            "database":os.getenv("DB_NAME")
+            # "host": "localhost",
+            # "user": "root",
+            # "password": "12345",
+            # "database": "RinconDelSabor"
         }
         self.conn = mysql.connector.connect(**cfg)
         self.cursor = self.conn.cursor(dictionary=True)

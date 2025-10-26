@@ -45,14 +45,18 @@
 import mysql.connector
 from datetime import datetime
 from database import crear_ddbb
-
+import os
 def conectar_ddbb():
     crear_ddbb()
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="12345",
-        database="RinconDelSabor"
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        database=os.getenv("DB_NAME")
+        # host="localhost",
+        # user="root",
+        # password="12345",
+        # database="RinconDelSabor"
     )
 ########################## RESERVAS ##########################
 # --- Crear reserva ---

@@ -241,7 +241,7 @@ def chat_por_mesa():
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
     """
-    Endpoint del chatbot SIBO conectado a la base de datos.
+    Endpoint del chatbot SIBO conectado a la base de datos
     Interpreta el mensaje del usuario y devuelve recomendaciones reales.
     """
     data = request.get_json()

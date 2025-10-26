@@ -5,7 +5,7 @@ import os
 
 def generar_qr_restaurante():
     """Genera QR imprimible para el restaurante"""
-    
+
     # URL del menú SIBO
     base_url = os.getenv('BASE_URL', 'http://localhost:5000')
     menu_url = f"{base_url}/menu-sibo"
