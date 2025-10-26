@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú SIBO - El Rincón del Sabor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #8b5e3c, #e6ccb2);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: #8b5e3c;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 { margin-bottom: 5px; }
+        .header p { opacity: 0.9; }
+        
+        .container {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .menu-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .menu-category {
+            margin-bottom: 25px;
+        }
+        
+        .menu-category h3 {
+            color: #8b5e3c;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e6ccb2;
+            font-size: 1.2em;
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .menu-item:last-child { border-bottom: none; }
+        
+        .item-name { 
+            flex: 1; 
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .item-price { 
+            color: #8b5e3c; 
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .chat-section {
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .chat-header {
+            background: #8b5e3c;
+            color: white;
+            padding: 15px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin: 10px 0;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 85%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .message.user {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.bot {
+            background: #e9ecef;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #dee2e6;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .chat-input button {
+            margin-left: 10px;
+            padding: 12px 20px;
+            background: #8b5e3c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .chat-input button:hover { background: #5c3d2e; }
+        .chat-input button:disabled { background: #6c757d; cursor: not-allowed; }
+        
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .menu-item { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .chat-section { height: 350px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🍽️ Menú SIBO Especial</h1>
+        <p>El Rincón del Sabor - Opciones saludables para dietas SIBO</p>
+    </div>
+    
+    <div class="container">
+        <div class="info-box">
+            <strong>¡Bienvenido!</strong> Este es nuestro menú especial para personas con SIBO. 
+            Todos los platos están preparados con ingredientes seguros y recomendados.
+        </div>
+        
+        <div class="menu-section">
+            <h2 style="color: #8b5e3c; margin-bottom: 20px; text-align: center;">🥘 Nuestro Menú SIBO</h2>
+            
+            <div class="menu-category">
+                <h3>🥩 Carnes</h3>
+                <div class="menu-item">
+                    <span class="item-name">Bife magro grillado con puré de calabaza</span>
+                    <span class="item-price">$3500</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Estofado de carne con papas y zanahorias</span>
+                    <span class="item-price">$3200</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Lomo al horno con vegetales SIBO</span>
+                    <span class="item-price">$4200</span>
+                </div>
+            </div>
+            
+            <div class="menu-category">
+                <h3>🐟 Pescados</h3>
+                <div class="menu-item">
+                    <span class="item-name">Pescado al horno con espinacas</span>
+                    <span class="item-price">$2800</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Filete de pescado grillado con limón</span>
+                    <span class="item-price">$3000</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Salmón con puré de calabaza</span>
+                    <span class="item-price">$3800</span>
+                </div>
+            </div>
+            
+            <div class="menu-category">
+                <h3>🐔 Pollo</h3>
+                <div class="menu-item">
+                    <span class="item-name">Pechuga grillada con vegetales</span>
+                    <span class="item-price">$2500</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Pollo al horno con hierbas</span>
+                    <span class="item-price">$2700</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Pollo con arroz integral</span>
+                    <span class="item-price">$2600</span>
+                </div>
+            </div>
+            
+            <div class="menu-category">
+                <h3>🌱 Vegetarianas</h3>
+                <div class="menu-item">
+                    <span class="item-name">Tofu marinado con vegetales grillados</span>
+                    <span class="item-price">$2200</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Salteado de tofu con mijo</span>
+                    <span class="item-price">$2400</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Ensalada de espinacas y rúcula</span>
+                    <span class="item-price">$1800</span>
+                </div>
+            </div>
+            
+            <div class="menu-category">
+                <h3>🥬 Acompañamientos</h3>
+                <div class="menu-item">
+                    <span class="item-name">Vegetales grillados con aceite de oliva</span>
+                    <span class="item-price">$1600</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Puré de calabaza casero</span>
+                    <span class="item-price">$1400</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Arroz integral con vegetales</span>
+                    <span class="item-price">$1900</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Risotto de calabaza</span>
+                    <span class="item-price">$2100</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-section">
+            <div class="chat-header">
+                <h3>🤖 Chatea con SiBoti</h3>
+                <p>Tu asistente especializado en SIBO</p>
+            </div>
+            
+            <div class="chat-messages" id="messages">
+                <div class="message bot">
+                    ¡Hola! 👋 Soy SiBoti, tu asistente especializado en dietas SIBO.
+                    
+                    Puedo ayudarte con:
+                    👉 Información sobre nuestros platos
+                    👉 Recomendaciones personalizadas
+                    👉 Preguntas sobre ingredientes
+                    
+                    ¿En qué puedo ayudarte hoy?
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Pregúntame sobre el menú SIBO..." maxlength="500">
+                <button id="sendButton" onclick="sendMessage()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            messageDiv.textContent = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        async function sendMessage() {
+            const mensaje = messageInput.value.trim();
+            if (!mensaje) return;
+            
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            
+            addMessage(mensaje, true);
+            messageInput.value = '';
+            
+            try {
+                const response = await fetch('/api/chat-general', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mensaje: mensaje })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    addMessage(data.respuesta);
+                } else {
+                    addMessage('Error: ' + (data.error || 'No se pudo procesar tu mensaje'));
+                }
+                
+            } catch (error) {
+                addMessage('Error de conexión. Por favor, intenta de nuevo.');
+                console.error('Error:', error);
+            } finally {
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        messageInput.focus();
+    </script>
+</body>
+</html>

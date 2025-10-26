@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Digital - El Rincón del Sabor</title>
+    <meta name="description" content="Menú digital con opciones SIBO y asistente virtual SiBoti">
+    <style>
+        :root {
+            --primary-color: #8b5e3c;
+            --secondary-color: #e6ccb2;
+            --accent-color: #28a745;
+            --text-color: #333;
+            --bg-color: #fff8f0;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+        
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 { 
+            font-size: 1.8rem; 
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .header p { 
+            opacity: 0.9; 
+            font-size: 0.95rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        .welcome-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .welcome-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .menu-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .menu-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .menu-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--secondary-color);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+        }
+        
+        .menu-item:hover {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        .menu-item:last-child { border-bottom: none; }
+        
+        .item-info {
+            flex: 1;
+            margin-right: 15px;
+        }
+        
+        .item-name { 
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+        
+        .item-description {
+            font-size: 0.85rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .item-price { 
+            color: var(--primary-color); 
+            font-weight: 700;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+        
+        .chat-section {
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 120px;
+        }
+        
+        .chat-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+        }
+        
+        .chat-header h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            scroll-behavior: smooth;
+        }
+        
+        .message {
+            margin: 12px 0;
+            padding: 14px 18px;
+            border-radius: 20px;
+            max-width: 85%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 6px;
+        }
+        
+        .message.bot {
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            color: var(--text-color);
+            margin-right: auto;
+            border-bottom-left-radius: 6px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 15px 18px;
+            color: #6c757d;
+            font-style: italic;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #dee2e6;
+            border-radius: 0 0 15px 15px;
+            gap: 12px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .chat-input input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .chat-input button {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--primary-color), #5c3d2e);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input button:hover:not(:disabled) {
+            background: linear-gradient(135deg, #5c3d2e, var(--primary-color));
+            transform: translateY(-2px);
+        }
+        
+        .chat-input button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .quick-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid var(--secondary-color);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .promo-banner {
+            background: linear-gradient(135deg, var(--accent-color), #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .promo-banner h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 2fr 1fr;
+                gap: 30px;
+            }
+            
+            .menu-content {
+                grid-column: 1;
+            }
+            
+            .chat-section {
+                grid-column: 2;
+                grid-row: 1 / -1;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .container { padding: 15px; }
+            .menu-section { padding: 20px; }
+            .chat-section { 
+                height: 400px; 
+                position: static;
+            }
+            .menu-item { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 8px; 
+            }
+            .header h1 { font-size: 1.5rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .chat-input { padding: 15px; }
+            .chat-input input, .chat-input button { font-size: 16px; }
+            .quick-actions { padding: 10px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🍽️ El Rincón del Sabor</h1>
+        <p>Menú Digital • Especialistas en cocina SIBO-friendly</p>
+    </div>
+    
+    <div class="container">
+        <div class="menu-content">
+            <div class="welcome-card">
+                <h2>¡Bienvenido a nuestro Menú Digital!</h2>
+                <p>Descubre nuestras opciones especiales para dietas SIBO y chatea con <strong>SiBoti</strong>, nuestro asistente virtual especializado.</p>
+            </div>
+            
+            <div class="promo-banner">
+                <h3>🎉 Promoción Especial SIBO</h3>
+                <p>20% de descuento en todos los platos SIBO-friendly • Válido hasta fin de mes</p>
+            </div>
+            
+            <div class="menu-grid">
+                <div class="menu-section">
+                    <h3>🥩 Carnes Premium</h3>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Bife Magro Grillado</div>
+                            <div class="item-description">Con puré de calabaza casero y vegetales de estación</div>
+                        </div>
+                        <div class="item-price">$3.500</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Estofado de Carne</div>
+                            <div class="item-description">Con papas y zanahorias, cocción lenta 4 horas</div>
+                        </div>
+                        <div class="item-price">$3.200</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Lomo al Horno</div>
+                            <div class="item-description">Con vegetales SIBO-friendly y hierbas aromáticas</div>
+                        </div>
+                        <div class="item-price">$4.200</div>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>🐟 Pescados Frescos</h3>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Pescado al Horno</div>
+                            <div class="item-description">Con espinacas frescas y limón orgánico</div>
+                        </div>
+                        <div class="item-price">$2.800</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Filete Grillado</div>
+                            <div class="item-description">A la plancha con aceite de oliva extra virgen</div>
+                        </div>
+                        <div class="item-price">$3.000</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Salmón Premium</div>
+                            <div class="item-description">Con puré de calabaza y eneldo fresco</div>
+                        </div>
+                        <div class="item-price">$3.800</div>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>🐔 Aves de Corral</h3>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Pechuga Grillada</div>
+                            <div class="item-description">Con vegetales salteados y especias naturales</div>
+                        </div>
+                        <div class="item-price">$2.500</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Pollo al Horno</div>
+                            <div class="item-description">Con hierbas mediterráneas y limón</div>
+                        </div>
+                        <div class="item-price">$2.700</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Pollo con Arroz</div>
+                            <div class="item-description">Arroz integral con vegetales SIBO-safe</div>
+                        </div>
+                        <div class="item-price">$2.600</div>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>🌱 Opciones Vegetarianas</h3>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Tofu Marinado</div>
+                            <div class="item-description">Con vegetales grillados y salsa de soja sin gluten</div>
+                        </div>
+                        <div class="item-price">$2.200</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Salteado de Tofu</div>
+                            <div class="item-description">Con mijo orgánico y vegetales de estación</div>
+                        </div>
+                        <div class="item-price">$2.400</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Ensalada Premium</div>
+                            <div class="item-description">Espinacas, rúcula y aderezo casero</div>
+                        </div>
+                        <div class="item-price">$1.800</div>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>🥬 Acompañamientos</h3>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Vegetales Grillados</div>
+                            <div class="item-description">Con aceite de oliva extra virgen</div>
+                        </div>
+                        <div class="item-price">$1.600</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Puré de Calabaza</div>
+                            <div class="item-description">Casero, cremoso y sin lactosa</div>
+                        </div>
+                        <div class="item-price">$1.400</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Arroz Integral</div>
+                            <div class="item-description">Con vegetales salteados</div>
+                        </div>
+                        <div class="item-price">$1.900</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Risotto de Calabaza</div>
+                            <div class="item-description">Cremoso y aromático, sin lactosa</div>
+                        </div>
+                        <div class="item-price">$2.100</div>
+                    </div>
+                </div>
+                
+                <div class="menu-section">
+                    <h3>🥤 Bebidas</h3>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Agua Mineral</div>
+                            <div class="item-description">Con o sin gas, 500ml</div>
+                        </div>
+                        <div class="item-price">$800</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Jugo Natural</div>
+                            <div class="item-description">Naranja, limón o pomelo recién exprimido</div>
+                        </div>
+                        <div class="item-price">$1.200</div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="item-info">
+                            <div class="item-name">Té de Hierbas</div>
+                            <div class="item-description">Manzanilla, menta o jengibre</div>
+                        </div>
+                        <div class="item-price">$900</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-section">
+            <div class="chat-header">
+                <h3>🤖 SiBoti - Tu Asistente</h3>
+                <p>Especialista en cocina SIBO</p>
+            </div>
+            
+            <div class="chat-messages" id="messages">
+                <div class="message bot">
+                    ¡Hola! 👋 Soy SiBoti, tu asistente especializado en dietas SIBO.
+                    
+                    Puedo ayudarte con:
+                    🍽️ Recomendaciones de platos
+                    💰 Información de precios
+                    🥗 Ingredientes y preparación
+                    📞 Reservas y consultas
+                    
+                    ¿En qué puedo ayudarte hoy?
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <div class="quick-btn" onclick="sendQuickMessage('menú')">Ver Menú</div>
+                <div class="quick-btn" onclick="sendQuickMessage('precios')">Precios</div>
+                <div class="quick-btn" onclick="sendQuickMessage('carne')">Carnes</div>
+                <div class="quick-btn" onclick="sendQuickMessage('pescado')">Pescados</div>
+                <div class="quick-btn" onclick="sendQuickMessage('reserva')">Reservar</div>
+            </div>
+            
+            <div class="typing-indicator" id="typing">
+                SiBoti está escribiendo...
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Pregúntame sobre el menú, precios o reservas..." maxlength="500">
+                <button id="sendButton" onclick="sendMessage()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typing');
+        
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            messageDiv.textContent = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function showTyping() {
+            typingIndicator.style.display = 'block';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function hideTyping() {
+            typingIndicator.style.display = 'none';
+        }
+        
+        function sendQuickMessage(message) {
+            messageInput.value = message;
+            sendMessage();
+        }
+        
+        async function sendMessage() {
+            const mensaje = messageInput.value.trim();
+            if (!mensaje) return;
+            
+            // Deshabilitar controles
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            
+            // Mostrar mensaje del usuario
+            addMessage(mensaje, true);
+            messageInput.value = '';
+            
+            // Mostrar indicador de escritura
+            showTyping();
+            
+            try {
+                const response = await fetch('/api/chat-general', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mensaje: mensaje })
+                });
+                
+                const data = await response.json();
+                
+                // Simular delay para mejor UX
+                setTimeout(() => {
+                    hideTyping();
+                    
+                    if (response.ok) {
+                        addMessage(data.respuesta);
+                    } else {
+                        addMessage('❌ Error: ' + (data.error || 'No se pudo procesar tu mensaje'));
+                    }
+                }, 800);
+                
+            } catch (error) {
+                setTimeout(() => {
+                    hideTyping();
+                    addMessage('❌ Error de conexión. Por favor, intenta de nuevo.');
+                    console.error('Error:', error);
+                }, 800);
+            } finally {
+                // Rehabilitar controles después del delay
+                setTimeout(() => {
+                    messageInput.disabled = false;
+                    sendButton.disabled = false;
+                    messageInput.focus();
+                }, 900);
+            }
+        }
+        
+        // Eventos
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // Auto-focus en dispositivos no móviles
+        if (window.innerWidth > 768) {
+            messageInput.focus();
+        }
+        
+        // Mensaje de bienvenida adicional después de 2 segundos
+        setTimeout(() => {
+            addMessage('💡 Tip: Usa los botones rápidos debajo del chat para consultas frecuentes.');
+        }, 2000);
+    </script>
+</body>
+</html>

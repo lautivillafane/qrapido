@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiBoti - Asistente SIBO</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #8b5e3c, #e6ccb2);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: #8b5e3c;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .reserva-info {
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            margin: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            margin: 0 10px;
+            background: white;
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+        }
+        
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin: 10px 0;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        
+        .message.user {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.bot {
+            background: #e9ecef;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .input-container {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .input-container input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        .input-container button {
+            margin-left: 10px;
+            padding: 12px 20px;
+            background: #8b5e3c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .input-container button:hover {
+            background: #5c3d2e;
+        }
+        
+        .input-container button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .typing {
+            padding: 10px 16px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        @media (max-width: 480px) {
+            .input-container {
+                padding: 10px;
+            }
+            .input-container input {
+                font-size: 16px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 SiBoti</h1>
+        <p>Tu asistente especializado en SIBO</p>
+    </div>
+    
+    <div class="reserva-info">
+        <strong>{{ reserva.nombre }}</strong> - Reserva #{{ reserva.id }} 
+        - {{ reserva.fecha }} {{ reserva.hora }}
+        {% if reserva.necesita_sibo %}
+        <span style="color: #8b5e3c;">🍽️ Menú SIBO</span>
+        {% endif %}
+    </div>
+    
+    <div class="chat-container">
+        <div class="messages" id="messages">
+            <div class="message bot">
+                ¡Hola {{ reserva.nombre }}! 👋<br><br>
+                Soy SiBoti, tu asistente especializado en dietas SIBO. 
+                Puedo ayudarte con recomendaciones de alimentos y recetas.<br><br>
+                Pregúntame sobre: carne, pescado, tofu, pollo, verduras o arroz.
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="Escribe tu pregunta sobre alimentos SIBO..." maxlength="500">
+            <button id="sendButton" onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        const token = '{{ token }}';
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            messageDiv.textContent = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing';
+            typingDiv.id = 'typing';
+            typingDiv.textContent = 'SiBoti está escribiendo...';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function hideTyping() {
+            const typingDiv = document.getElementById('typing');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+        
+        async function sendMessage() {
+            const mensaje = messageInput.value.trim();
+            if (!mensaje) return;
+            
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            
+            addMessage(mensaje, true);
+            messageInput.value = '';
+            
+            showTyping();
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        mensaje: mensaje
+                    })
+                });
+                
+                const data = await response.json();
+                
+                hideTyping();
+                
+                if (response.ok) {
+                    addMessage(data.respuesta);
+                } else {
+                    addMessage('Error: ' + (data.error || 'No se pudo procesar tu mensaje'));
+                }
+                
+            } catch (error) {
+                hideTyping();
+                addMessage('Error de conexión. Por favor, intenta de nuevo.');
+                console.error('Error:', error);
+            } finally {
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+        
+        // Enviar
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+
+        messageInput.focus();
+    </script>
+</body>
+</html>

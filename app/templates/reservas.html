@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas - El Rincón del Sabor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #fff8f0; color: #333; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; }
+        h1 { color: #8b5e3c; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #8b5e3c; color: white; }
+        .btn { background: #8b5e3c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lista de Reservas</h1>
+        <a href="/" class="btn">← Volver al inicio</a>
+        
+        {% if reservas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Personas</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>SIBO</th>
+                    <th>QR Imprimible</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas %}
+                <!-- <tr style= {% if reserva.necesita_sibo %}background-color: #fff3cd;{% endif %}"> -->
+                    <td>{{ reserva.id }}</td>
+                    <td>{{ reserva.nombre }}</td>
+                    <td>{{ reserva.telefono }}</td>
+                    <td>{{ reserva.personas }}</td>
+                    <td>{{ reserva.fecha }}</td>
+                    <td>{{ reserva.hora }}</td>
+                    <td>
+                        {% if reserva.necesita_sibo %}
+                        🍽️ SÍ
+                        {% else %}
+                        ❌ NO
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="/reservas/{{ reserva.id }}/qr-impreso" 
+                           style="background: #8b5e3c; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px; font-size: 12px;"
+                           download>📱 Descargar QR</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No hay reservas registradas.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
