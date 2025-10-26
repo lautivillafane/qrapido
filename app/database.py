@@ -1,10 +1,15 @@
 import mysql.connector
+import os
 
 def crear_ddbb():
     conexion = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="12345"  
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        database=os.getenv("DB_NAME")
+    # host="localhost",
+        # user="root",
+        # password="12345"  
     )
     cursor = conexion.cursor()
 
