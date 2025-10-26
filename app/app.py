@@ -10,7 +10,7 @@ import secrets
 from PIL import Image, ImageDraw, ImageFont
 import uuid
 # --------
-# from database import 
+from .database import crear_ddbb
 from .models import conectar_ddbb, crear_reserva, leer_reservas, leer_reserva
 from .SiBoti import SiBoti
 
@@ -145,6 +145,15 @@ def generate_printable_qr(reserva_id, token):
 def home():
     return render_template("index.html")
 
+
+@app.route('/init-db')
+def init_db():
+    try:
+        crear_ddbb()
+        return "Base de datos inicializada correctamente"
+    except Exception as e:
+        return f"Error: {str(e)}", 500
+    
 @app.route("/reservar", methods=["POST"])
 def reservar():
     conn = None
