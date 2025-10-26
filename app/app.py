@@ -271,5 +271,8 @@ def internal_error(error):
     return render_template("error.html", mensaje="Error interno del servidor"), 500
 
 if __name__ == "__main__":
-    debug_mode = os.getenv('FLASK_ENV') == 'development'
-    app.run(debug=debug_mode, host='127.0.0.1', port=5000)
+    app.run(host="0.0.0.0", port=5000)
+
+# if __name__ == "__main__":
+#     debug_mode = os.getenv('FLASK_ENV') == 'development'
+#     app.run(debug=debug_mode, host='127.0.0.1', port=5000)
