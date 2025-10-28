@@ -37,11 +37,11 @@ def ejecutar_sql(archivo_sql):
 @app.route('/cargar_datos', methods=['POST'])
 def cargar_datos():
     try:
-        ejecutar_sql("data/rincondelsabor_ingredientes.sql")
-        ejecutar_sql("data/rincondelsabor_recetas.sql")
-        ejecutar_sql("data/rincondelsabor_receta_ingrediente.sql")
-        ejecutar_sql("data/rincondelsabor_reservas.sql")
-        ejecutar_sql("data/rincondelsabor_ordenes.sql")
+        ejecutar_sql("rincondelsabor_ingredientes.sql")
+        ejecutar_sql("rincondelsabor_recetas.sql")
+        ejecutar_sql("rincondelsabor_receta_ingrediente.sql")
+        ejecutar_sql("rincondelsabor_reservas.sql")
+        ejecutar_sql("rincondelsabor_ordenes.sql")
 
         return jsonify({"mensaje": "Datos cargados correctamente en la base de datos."}), 200
     except Exception as e:
