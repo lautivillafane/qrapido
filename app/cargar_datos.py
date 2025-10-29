@@ -1,8 +1,8 @@
-from flask import Flask, jsonify, request
+# from flask import Flask, jsonify, request
 import mysql.connector
 import os
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
 # Configuración de conexión a Railway
 def conectar_db():
@@ -33,7 +33,7 @@ def ejecutar_sql(archivo_sql):
     conexion.commit()
     cursor.close()
     conexion.close()
-
+"""
 @app.route('/cargar_datos', methods=['POST'])
 def cargar_datos():
     try:
@@ -46,6 +46,6 @@ def cargar_datos():
         return jsonify({"mensaje": "Datos cargados correctamente en la base de datos."}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+# """
+# if __name__ == "__main__":
+#     app.run(host="0.0.0.0", port=5000)

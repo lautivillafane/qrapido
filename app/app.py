@@ -13,7 +13,7 @@ import uuid
 from .database import crear_ddbb
 from .models import conectar_ddbb, crear_reserva, leer_reservas, leer_reserva
 from .SiBoti import SiBoti
-
+from .cargar_datos import ejecutar_sql
 app = Flask(__name__)
 bot = SiBoti()  # cargamos el modelo una vez
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', secrets.token_hex(16))
@@ -269,7 +269,21 @@ def ver_ordenes():
     bot.cursor.execute("SELECT * FROM ordenes ORDER BY fecha DESC;")
     ordenes = bot.cursor.fetchall()
     return jsonify(ordenes)
+@app.route('/cargar_datos', methods=['POST'])
+def cargar_datos():
+    try:
+        ejecutar_sql("rincondelsabor_ingredientes.sql")
+        ejecutar_sql("rincondelsabor_recetas.sql")
+        ejecutar_sql("rincondelsabor_receta_ingrediente.sql")
+        ejecutar_sql("rincondelsabor_reservas.sql")
+        ejecutar_sql("rincondelsabor_ordenes.sql")
 
+        return jsonify({"mensaje": "Datos cargados correctamente en la base de datos."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
 
 @app.errorhandler(404)
 def not_found(error):
