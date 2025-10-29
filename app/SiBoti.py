@@ -10,13 +10,23 @@ class SiBoti:
             "host":os.getenv("DB_HOST"),
             "user":os.getenv("DB_USER"),
             "password":os.getenv("DB_PASS"),
-            "database":os.getenv("DB_NAME")
+            "database":os.getenv("DB_NAME"),
+            # "charset" ='utf8mb4',
+            # use_unicode=True
             # "host": "localhost",
             # "user": "root",
             # "password": "12345",
             # "database": "RinconDelSabor"
         }
-        self.conn = mysql.connector.connect(**cfg)
+        # self.conn = mysql.connector.connect(**cfg)
+        self.conn = mysql.connector.connect(
+            host=cfg["host"],
+            user=cfg["user"],
+            password=cfg["password"],
+            database=cfg["database"],
+            charset='utf8mb4',
+            use_unicode=True
+        )
         self.cursor = self.conn.cursor(dictionary=True)
  
         # Memoria por "mesa" (session): guarda preferencias y última lista mostrada
@@ -31,9 +41,13 @@ class SiBoti:
         texto = re.sub(r'[^a-z0-9\s]', ' ', texto)
         texto = re.sub(r'\bpara\b', ' ', texto)
         texto = re.sub(r'\s+', ' ', texto).strip()
-        if len(texto) > 1 and texto.endswith('s'):
-            texto = texto[:-1]
-        return texto
+        # Quitar plural (si termina en 's', pero no si es una palabra corta como 'dos', 'tres')
+        palabras = []
+        for palabra in texto.split():
+            if len(palabra) > 3 and palabra.endswith('s'):
+                palabra = palabra[:-1]
+            palabras.append(palabra)
+        return " ".join(palabras)
 
     def detectar_intencion(self, mensaje):
         txt = self.limpiar_texto(mensaje)
@@ -172,20 +186,25 @@ class SiBoti:
 
     def sugerir_cambio(self, nombre_parcial):
         nombre_parcial = self.limpiar_texto(nombre_parcial)
+
         # obtener lista de recetas
         self.cursor.execute("SELECT nombre FROM recetas;")
         todas_rows = [r["nombre"] for r in self.cursor.fetchall()]
         todas_limpias = [self.limpiar_texto(r) for r in todas_rows]
-        # buscar coincidencias aproximadas
-        matches = get_close_matches(nombre_parcial, todas_limpias, n=5, cutoff=0.55)
-        if not matches:
+
+        # coincidencia parcial o singular/plural
+        posibles = []
+        for i, receta in enumerate(todas_limpias):
+            if nombre_parcial in receta or receta in nombre_parcial:
+                posibles.append(i)
+
+        if not posibles:
             return f"No encontré ninguna receta similar a '{nombre_parcial}'. ¿Querés que te muestre opciones parecidas?"
 
         resultados = []
-        for m in matches:
-            # recuperar nombre real a la primera coincidencia
-            idx = todas_limpias.index(m)
+        for idx in posibles[:5]:
             receta_real = todas_rows[idx]
+
             # obtener ingredientes y aptitud
             q = """
             SELECT i.nombre AS ingrediente, i.apto_sibo
@@ -197,27 +216,32 @@ class SiBoti:
             self.cursor.execute(q, (receta_real,))
             filas = self.cursor.fetchall()
             no_aptos = [f["ingrediente"] for f in filas if f["apto_sibo"] == "No"]
+
             if no_aptos:
                 resultados.append(f"Podés pedir '{receta_real}' sin {', '.join(no_aptos)} para hacerlo apto SIBO.")
             else:
                 resultados.append(f"Genial! '{receta_real}' ya es apto SIBO.")
+
         return "\n".join(resultados)
+
 
 
     def buscar_por_ingrediente(self, palabra):
         palabra = self.limpiar_texto(palabra)
-        # lista de ingredientes
         self.cursor.execute("SELECT nombre FROM ingredientes;")
         ingredientes = [r["nombre"] for r in self.cursor.fetchall()]
         ingredientes_limpias = [self.limpiar_texto(i) for i in ingredientes]
-        match = get_close_matches(palabra, ingredientes_limpias, n=1, cutoff=0.5)
-        if not match:
-            # sugerir alternativas
-            suger = ", ".join(["pollo", "pescado", "tofu"])
-            return f"No encontré el ingrediente '{palabra}'. ¿Quizás quisiste decir {suger}? 😊"
-        ing_limpio = match[0]
-        idx = ingredientes_limpias.index(ing_limpio)
-        ing_real = ingredientes[idx]
+
+        match = None
+        for i, ing in enumerate(ingredientes_limpias):
+            if palabra in ing or ing in palabra:
+                match = i
+                break
+
+        if match is None:
+            return f"No encontré el ingrediente '{palabra}'. Probá con otro, como pollo, pescado o verdura."
+
+        ing_real = ingredientes[match]
         # buscar recetas que contengan ese ingrediente
         q = """
         SELECT DISTINCT r.nombre AS receta
@@ -319,31 +343,29 @@ class SiBoti:
         if texto in ["si", "sí", "dale", "ok", "bueno", "claro"]:
             sess = self._ensure_session(mesa)
             ultima = sess.get("ultima_pregunta")
-
+            
+            if not ultima:
+                return random.choice([
+                    "Perfecto! ¿Querés que te recomiende platos aptos SIBO?",
+                    "Buenísimo! Puedo mostrarte opciones aptas o moderadas, ¿cuál preferís?"
+                ])
             if ultima == "mostrar_apto_sibo_pregunta":
                 lista = self.recomendar_apto_sibo(mesa)
+                sess["ultima_pregunta"] = "mostrar_moderado_pregunta"
                 if lista:
-                    sess["ultima_pregunta"] = None
-                    return "Recetas aptas SIBO:\n" + "\n".join([f"✅ {r}" for r in lista])
-                else:
-                    return "Por ahora no tengo platos 100% aptos registrados"
-                
+                    return "Recetas aptas SIBO:\n" + "\n".join([f"✅ {r}" for r in lista]) + "\n\n¿Querés que te muestre las moderadas?"
+                return "No tengo platos aptos en este momento, pero puedo mostrarte opciones moderadas."
+
             if ultima == "mostrar_moderado_pregunta":
                 lista = self.recomendar_moderado(mesa)
                 sess["ultima_pregunta"] = None
                 if lista:
-                    return "Recetas moderadas (se pueden adaptar):\n" + "\n".join([f"⚠️ {r}" for r in lista])
-                else:
-                    return "No tengo platos moderados en este momento."
-                
+                    return "Estas son las moderadas (se pueden adaptar):\n" + "\n".join([f"⚠️ {r}" for r in lista])
+                return "No tengo platos moderados ahora mismo."
+
             if ultima == "confirmar_orden":
                 sess["ultima_pregunta"] = None
                 return "Perfecto, envío el pedido a la cocina."
-            
-            return random.choice([
-                "Genial!, ¿querés que te muestre el menú apto SIBO?",
-                "Perfecto!, te muestro opciones aptas o moderadas?"
-            ])
 
         elif texto in ["no", "nono","nop", "nah", "no gracias"]:
             sess = self._ensure_session(mesa)

@@ -69,6 +69,17 @@ def crear_ddbb():
         estado ENUM('Pendiente', 'En preparación', 'Servido') DEFAULT 'Pendiente'
         );
     """)
+
+    cursor.execute("""
+        CREATE TABLE interacciones (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        mesa VARCHAR(10),
+        mensaje_usuario TEXT,
+        respuesta_bot TEXT,
+        intencion_detectada VARCHAR(50),
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    """)
     print("Tablas creadas correctamente.")
     # Confirmar y cerrar conexión
     conexion.commit()
