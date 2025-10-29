@@ -18,7 +18,7 @@ class SiBoti:
         }
         self.conn = mysql.connector.connect(**cfg)
         self.cursor = self.conn.cursor(dictionary=True)
-
+ 
         # Memoria por "mesa" (session): guarda preferencias y última lista mostrada
         self.sessions = {}
 

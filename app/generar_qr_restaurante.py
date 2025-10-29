@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 
 def generar_qr_restaurante():
-    """Genera QR imprimible para el restaurante"""
+    """Genera QR imprimible para el restaurante""" 
 
     # URL del menú SIBO
     base_url = os.getenv('BASE_URL', 'http://localhost:5000')

@@ -1,47 +1,3 @@
-# import mysql.connector
-# from mysql.connector import Error
-# import os
-
-# def update_database():
-#     try:
-#         conn = mysql.connector.connect(
-#             host=os.getenv('DB_HOST', 'localhost'),
-#             user=os.getenv('DB_USER', 'root'),
-#             password=os.getenv('DB_PASSWORD', '4gust1n4'),
-#             database=os.getenv('DB_NAME', 'restaurante')
-#         )
-#         cursor = conn.cursor()
-        
-#         # Agregar columnas para tokens si no existen
-#         try:
-#             cursor.execute("ALTER TABLE reservas ADD COLUMN token VARCHAR(255) UNIQUE")
-#             print("[OK] Columna token agregada")
-#         except Error as e:
-#             if "Duplicate column name" in str(e):
-#                 print("[INFO] Columna token ya existe")
-#             else:
-#                 raise e
-                
-#         try:
-#             cursor.execute("ALTER TABLE reservas ADD COLUMN token_expires_at DATETIME")
-#             print("[OK] Columna token_expires_at agregada")
-#         except Error as e:
-#             if "Duplicate column name" in str(e):
-#                 print("[INFO] Columna token_expires_at ya existe")
-#             else:
-#                 raise e
-        
-#         conn.commit()
-#         cursor.close()
-#         conn.close()
-#         print("[SUCCESS] Base de datos actualizada correctamente")
-        
-#     except Error as e:
-#         print(f"[ERROR] Error actualizando base de datos: {e}")
-
-# if __name__ == "__main__":
-#     update_database()
-
 import mysql.connector
 from datetime import datetime
 from .database import crear_ddbb
@@ -52,7 +8,9 @@ def conectar_ddbb():
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASS"),
-        database=os.getenv("DB_NAME")
+        database=os.getenv("DB_NAME"),
+        charset='utf8mb4',
+        use_unicode=True    
         # host="localhost",
         # user="root",
         # password="12345",
